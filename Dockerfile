@@ -2,6 +2,8 @@ FROM ubuntu:20.04
 
 ENV DALO_VERSION 1.2
 
+ENV DEBIAN_FRONTEND noninteractive
+
 ENV MYSQL_USER radius
 ENV MYSQL_PASSWORD dalodbpass
 ENV MYSQL_HOST localhost
@@ -12,12 +14,11 @@ ENV TZ Asia/Shanghai
 COPY entry.sh /
 
 RUN set -ex \
- && export DEBIAN_FRONTEND=noninteractive \
  && chmod 0544 /entry.sh \
 
  # install and set php
  && apt-get update \
- && apt-get install -y --force-yes apt-utils \
+ && apt-get install -y apt-utils \
                     tzdata \
                     apache2 \
                     libapache2-mod-php \
@@ -46,13 +47,11 @@ RUN set -ex \
  && pear install -a -f DB \
  && pear install -a -f Mail \
  && pear install -a -f Mail_Mime \
-
- # install daloradius
- && wget https://github.com/lirantal/daloradius/archive/"$DALO_VERSION".zip \
- && unzip "$DALO_VERSION".zip \
- && rm "$DALO_VERSION".zip \
- && rm -rf /var/www/html/index.html \
- && mv daloradius-"$DALO_VERSION"/* daloradius-"$DALO_VERSION"/.gitignore daloradius-"$DALO_VERSION"/.htaccess daloradius-"$DALO_VERSION"/.htpasswd /var/www/html \
+ && wget https://github.com/lirantal/daloradius/archive/${DALO_VERSION}.zip \
+ && unzip ${DALO_VERSION}.zip \
+ && rm ${DALO_VERSION}.zip \
+ && rm -rf /var/www/html/* \
+ && mv daloradius-${DALO_VERSION}/* daloradius-${DALO_VERSION}/.htaccess daloradius-${DALO_VERSION}/.htpasswd /var/www/html \
  && mv /var/www/html/library/daloradius.conf.php.sample /var/www/html/library/daloradius.conf.php \
  && chown -R www-data:www-data /var/www/html \
  && chmod 644 /var/www/html/library/daloradius.conf.php
