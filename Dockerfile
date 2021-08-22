@@ -12,6 +12,7 @@ ENV TZ Asia/Shanghai
 COPY entry.sh /
 
 RUN set -ex \
+ && export DEBIAN_FRONTEND=noninteractive \
  && chmod 0544 /entry.sh \
 
  # install and set php
