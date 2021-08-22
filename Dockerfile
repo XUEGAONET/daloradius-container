@@ -16,7 +16,7 @@ RUN set -ex \
 
  # install and set php
  && apt-get update \
- && apt-get install -y apt-utils \
+ && apt-get install -y --force-yes apt-utils \
                     tzdata \
                     apache2 \
                     libapache2-mod-php \
