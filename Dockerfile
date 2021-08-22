@@ -13,31 +13,33 @@ ENV TZ Asia/Shanghai
 
 COPY entry.sh /
 
-RUN set -ex \
- && chmod 0544 /entry.sh \
+# PHP install
+RUN apt-get update \
+	&& apt-get install --yes --no-install-recommends \
+		ca-certificates \
+		apt-utils \
+		freeradius-utils \
+		tzdata \
+		apache2 \
+		libapache2-mod-php \
+		cron \
+		net-tools \
+		php \
+		php-common \
+		php-gd \
+		php-curl \
+		php-mail \
+		php-mail-mime \
+		php-db \
+		php-mysql \
+		mariadb-client \
+		libmysqlclient-dev \
+		unzip \
+		wget \
+	&& rm -rf /var/lib/apt/lists/*
 
- # install and set php
- && apt-get update \
- && apt-get install -y apt-utils \
-                    tzdata \
-                    apache2 \
-                    libapache2-mod-php \
-                    net-tools \
-                    php \
-                    php-common \
-                    php-gd \
-                    php-curl \
-                    php-mail \
-                    php-mail-mime \
-                    php-db \
-                    php-mysql \
-                    mariadb-client \
-                    libmysqlclient-dev \
-                    unzip \
-                    wget \
-                    vim \
- && apt-get clean \
- && ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
+# PHP Pear DB library install
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
  && update-ca-certificates -f \
  && mkdir -p /tmp/pear/cache \
  && wget http://pear.php.net/go-pear.phar \
@@ -46,7 +48,13 @@ RUN set -ex \
  && pear channel-update pear.php.net \
  && pear install -a -f DB \
  && pear install -a -f Mail \
- && pear install -a -f Mail_Mime \
+ && pear install -a -f Mail_Mime
+
+# Create daloRADIUS Log file
+RUN touch /var/log/daloradius.log && chown -R www-data:www-data /var/log/daloradius.log
+
+RUN set -ex \
+ && chmod 0544 /entry.sh \
  && wget https://github.com/lirantal/daloradius/archive/${DALO_VERSION}.zip \
  && unzip ${DALO_VERSION}.zip \
  && rm ${DALO_VERSION}.zip \
@@ -59,3 +67,5 @@ RUN set -ex \
 EXPOSE 80
 
 CMD ["/entry.sh"]
+
+
