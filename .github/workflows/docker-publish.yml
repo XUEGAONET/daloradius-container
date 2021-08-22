@@ -57,5 +57,5 @@ jobs:
         with:
           context: .
           push: ${{ github.event_name != 'pull_request' }}
-          tags: latest
+          tags: a980883231/daloradius-container:latest
           labels: ${{ steps.meta.outputs.labels }}
