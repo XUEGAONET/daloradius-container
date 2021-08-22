@@ -38,18 +38,6 @@ RUN apt-get update \
 		wget \
 	&& rm -rf /var/lib/apt/lists/*
 
-# PHP Pear DB library install
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone \
- && update-ca-certificates -f \
- && mkdir -p /tmp/pear/cache \
- && wget http://pear.php.net/go-pear.phar \
- && php go-pear.phar \
- && rm go-pear.phar \
- && pear channel-update pear.php.net \
- && pear install -a -f DB \
- && pear install -a -f Mail \
- && pear install -a -f Mail_Mime
-
 # Create daloRADIUS Log file
 RUN touch /var/log/daloradius.log && chown -R www-data:www-data /var/log/daloradius.log
 
